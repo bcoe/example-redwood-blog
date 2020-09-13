@@ -18,4 +18,5 @@ packages/photon/index.d.ts
 
 # Local Netlify folder
 .netlify
+post.md
 

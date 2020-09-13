@@ -1,0 +1,23 @@
+steps:
+  # Install Dependencies
+- name: 'node'
+  entrypoint: 'yarn'
+  dir: './'
+  args: ['install']
+
+  # Build the frontend react application
+- name: 'node'
+  entrypoint: 'yarn'
+  dir: './'
+  args: ['redwood', 'build', 'web']
+
+  # Install Firebase tools
+- name: 'node'
+  entrypoint: 'npm'
+  dir: './'
+  args: ['install', '-g', 'firebase-tools']
+
+  # Deploy to firebase
+- name: 'gcr.io/oss-automation/firebase'
+  dir: './'
+  args: ['deploy', '--project=', '--only=hosting']

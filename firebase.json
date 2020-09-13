@@ -1,0 +1,21 @@
+{
+  "hosting": {
+    "target": "staging",
+    "public": "web/dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source" : "/graphql",
+        "run" : {
+          "serviceId" : "redwood-blog-container",
+          "region": "us-central1"
+        }
+      }
+    ],
+    "cleanUrls": true
+  }
+}

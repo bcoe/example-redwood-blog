@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "oss-automation"
+  },
+  "targets": {
+    "oss-automation": {
+      "hosting": {
+        "staging": [
+          "redwood-example-blog"
+        ]
+      }
+    }
+  }
+}
