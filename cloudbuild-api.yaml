@@ -1,20 +1,51 @@
 steps:
-  # build
-- id: 'Build Container Image'
-  name: 'gcr.io/cloud-builders/gcloud'
-  dir: './'
-  args: ['builds','submit', '--tag', 'gcr.io/oss-automation/redwood-blog-container']
+  - id: 'Install Cloud SQL Proxy'
+    name: alpine:3.10
+    entrypoint: sh
+    args:
+      - -c
+      - 'wget -O /workspace/cloud_sql_proxy https://storage.googleapis.com/cloudsql-proxy/v1.16/cloud_sql_proxy.linux.386 &&  chmod +x /workspace/cloud_sql_proxy'
 
-  # deploy
-- id: 'Deploy to Cloud Run'
-  name: 'gcr.io/cloud-builders/gcloud'
-  args:
-  - 'run'
-  - 'deploy'
-  - 'redwood-blog-container'
-  - '--image'
-  - 'gcr.io/oss-automation/redwood-blog-container'
-  - '--region'
-  - 'us-central1'
-  - '--platform'
-  - 'managed'
+  - id: 'Install npm dependencies'
+    name: 'node'
+    entrypoint: 'yarn'
+    dir: './'
+    args: ['install']
+
+  - id: 'Run db migration'
+    name: node
+    timeout: 100s
+    entrypoint: sh
+    args:
+      - -c
+      - '(/workspace/cloud_sql_proxy -dir=/workspace -instances=oss-automation:us-central1:redwood-testing-blog:sql-inst=tcp:5432 & sleep 2) && yarn redwood db up'
+    env: ['DATABASE_URL=${_DATABASE_URL}']
+
+  - id: 'Seed the database'
+    name: node
+    timeout: 100s
+    entrypoint: sh
+    args:
+      - -c
+      - '(/workspace/cloud_sql_proxy -dir=/workspace -instances=oss-automation:us-central1:redwood-testing-blog:sql-inst=tcp:5432 & sleep 2) && yarn redwood db seed || true'
+    env: ['DATABASE_URL=${_DATABASE_URL}']
+
+  - id: 'Build Container Image'
+    name: 'gcr.io/cloud-builders/gcloud'
+    dir: './'
+    args: ['builds','submit', '--tag', 'gcr.io/oss-automation/redwood-blog-container']
+
+  - id: 'Deploy to Cloud Run'
+    name: 'gcr.io/cloud-builders/gcloud'
+    args:
+    - 'run'
+    - 'deploy'
+    - 'redwood-blog-container'
+    - '--image'
+    - 'gcr.io/oss-automation/redwood-blog-container'
+    - '--region'
+    - 'us-central1'
+    - '--platform'
+    - 'managed'
+
+timeout: '1200s'
