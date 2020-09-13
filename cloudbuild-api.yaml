@@ -1,0 +1,20 @@
+steps:
+  # build
+- id: 'Build Container Image'
+  name: 'gcr.io/cloud-builders/gcloud'
+  dir: './'
+  args: ['builds','submit', '--tag', 'gcr.io/oss-automation/redwood-blog-container']
+
+  # deploy
+- id: 'Deploy to Cloud Run'
+  name: 'gcr.io/cloud-builders/gcloud'
+  args:
+  - 'run'
+  - 'deploy'
+  - 'redwood-blog-container'
+  - '--image'
+  - 'gcr.io/oss-automation/redwood-blog-container'
+  - '--region'
+  - 'us-central1'
+  - '--platform'
+  - 'managed'
