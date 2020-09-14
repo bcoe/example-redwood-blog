@@ -18,7 +18,7 @@ export const Loading = () => <div>Loading recent posts...</div>
 export const Success = ({ allPosts }) => {
   return (
     <div className="">
-      <h2 className="font-semibold text-indigo-800">Recent Hammers</h2>
+      <h2 className="font-semibold text-indigo-800">Ben's favorite hammers</h2>
       <ul className="text-sm mt-2">
         {allPosts.posts.map((post) => (
           <li key={post.id} className="my-2">
