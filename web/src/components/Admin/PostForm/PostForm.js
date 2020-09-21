@@ -7,7 +7,6 @@ import {
   Label,
   FieldError,
 } from '@redwoodjs/forms'
-import ReactFilestack from 'filestack-react'
 
 const CSS = {
   label:
@@ -32,18 +31,6 @@ const PostForm = (props) => {
     const type = document.activeElement.dataset.action
     props.onSave(Object.assign(data, { image: splashImage }), type)
     event.preventDefault()
-  }
-
-  const replaceImage = (event) => {
-    event.preventDefault()
-
-    setSplashImage(null)
-  }
-
-  const onFileUpload = (response) => {
-    const upload = response.filesUploaded[0]
-    console.info(response)
-    setSplashImage(upload.url)
   }
 
   return (
@@ -106,38 +93,6 @@ const PostForm = (props) => {
         validation={{ required: true }}
       />
       <FieldError name="body" className={CSS.error} />
-
-      <label className={CSS.label}>Splash Image</label>
-
-      <ReactFilestack
-        apikey={process.env.FILESTACK_API_KEY}
-        onSuccess={onFileUpload}
-        componentDisplayMode={{
-          type: 'immediate',
-        }}
-        actionOptions={{
-          displayMode: 'inline',
-          container: 'embedded',
-          fromSources: ['local_file_system', 'url'],
-        }}
-      />
-
-      <div
-        id="embedded"
-        className={`h-80 ${splashImage ? 'hidden' : ''}`}
-      ></div>
-
-      {splashImage && (
-        <div className="mt-2">
-          <img src={splashImage} alt="Splash image" className="max-h-80" />
-
-          <div className="mt-4">
-            <a href="#" onClick={replaceImage} className={`mt-4 ${CSS.save}`}>
-              Replace Image
-            </a>
-          </div>
-        </div>
-      )}
 
       <div className="flex justify-end mt-4">
         {props.save && (
